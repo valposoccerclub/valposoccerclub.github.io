@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=width=device-width, initial-scale=1">
+    <style>
+      button {
+        border: none;
+        border-radius: 3px;
+      }
+
+      button#check {
+        height: 30px;
+        width: 200px;
+        background: #108C43;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-weight: 200;
+        color: rgb(255, 255, 255);
+      }
+      @media only screen and (max-width: 400px) {
+        button#check {
+          width: 100%;
+        }
+      }
+
+      button#reset {
+        height: 30px;
+        width: 200px;
+        background: rgb(235, 235, 235);
+        font-weight: 200;
+        margin-bottom: 25px;
+      }
+
+      .center-content {
+        text-align: center;
+        width: 100%
+      }
+
+      div#checker {
+        text-align: center;
+        width: 40%;
+        float: left;
+      }
+      div#agegroups {
+        text-align: center;
+        width: 40%;
+        float: right;
+      }
+
+      button, label, input {
+        font-size: 18px;
+        font-family: "Lato",sans-serif;
+      }
+
+      td {
+        font-size: 18px;
+        font-family: "Lato",sans-serif;
+        width: 50%
+      }
+
+      div#birthday-entry {
+        display: inline-block;
+        width: 100%;
+      }
+
+      td {
+        padding: 10px
+      }
+
+      td.division-label {
+        text-align: right;
+      }
+
+      td.division {
+        text-align: left;
+      }
+
+      table {
+        width: 415px;
+        margin: auto;
+        table-layout: fixed;
+        border-collapse:collapse;
+        border: 1px solid;
+      }
+      @media only screen and (max-width: 415px) {
+        table {
+          width: 100%;
+        }
+      }
+
+      tr:nth-child(even) {
+        background: #efefef
+      }
+
+      tr:nth-child(odd) {
+        background: #FFF
+      }
+      th {
+        background-color:#108C43!important;
+        color:#FFF;
+        font-weight: bold;
+        font-size: 18px;
+        font-family: "Lato",sans-serif;
+        width: 50%
+      }
+    </style>
+  </head>
+
+  <script type="text/javascript">
+    const APRIL = 3;
+    const JULY = 6;
+    const AUGUST = 7;
+
+    const DIVISIONS = [8, 10, 12, 14];
+
+    const SPRING = 'spring';
+    const FALL = 'fall';
+    const TOO_OLD = 'Too old'
+    const TOO_YOUNG = 'Too young';
+
+    function getDivision(birthday, seasonYear, seasonSeason) {
+      var division;
+      for (const possibleDivision of DIVISIONS) {
+        var earliestBirthdayYear = seasonYear - possibleDivision - (seasonSeason == SPRING ? 1 : 0);
+        var earliestBirthday = new Date(earliestBirthdayYear, JULY, 31);
+        if (birthday > earliestBirthday) {
+          division = possibleDivision;
+          break;
+        }
+      }
+      if (division == null) {
+        return TOO_OLD;
+      }
+      if (division == 8) {
+        var latestBirthday = seasonSeason == FALL ? new Date(seasonYear - 6, JULY, 31) : new Date(seasonYear - 6, APRIL, 1);
+        if (birthday > latestBirthday) {
+          return TOO_YOUNG;
+        }
+      }
+      return 'U' + division;
+    }
+
+    function updateDivision(season, updateCurrentYear) {
+      var prefix = `${season == SPRING ? 'spring' : 'fall'}_${updateCurrentYear ? 'curr_year' : 'next_year'}`;
+      var label = document.getElementById(`${prefix}_label`)
+      var division = document.getElementById(`${prefix}_division`)
+      if (label && division) {
+        label.innerHTML = '';
+        division.innerHTML = '';
+        var currentYear = new Date().getFullYear();
+        var year = updateCurrentYear ? currentYear : currentYear + 1;
+        label.appendChild(
+           document.createTextNode(`${season == SPRING ? 'Spring' : 'Fall'} ${year}`))
+
+        var divisionText;
+        var birthday = document.getElementById("birthday");
+        if (birthday.value) {
+          divisionText = getDivision(new Date(birthday.value), year, season);
+        } else {
+          divisionText = '--'
+        }
+        division.appendChild(document.createTextNode(divisionText))
+      }
+    }
+
+    function updateDivisions() {
+      updateDivision(SPRING, true);
+      updateDivision(SPRING, false);
+      updateDivision(FALL, true);
+      updateDivision(FALL, false);
+    }
+
+    function reset() {
+      document.getElementById("birthday").value = '';
+      updateDivisions();
+    }
+
+  </script>
+
+  <body onload='updateDivisions()'>
+
+  <div id="checker">
+    <div id="birthday-entry">
+      <label for="birthday">Birthday:</label>
+      <input type="date" id="birthday" name="birthday">
+    </div>
+    <div class="center-content">
+      <button id="check" onclick="updateDivisions()">Check Divisions</button>
+      <button id="reset" onclick="reset()">Reset</button>
+    </div>
+    <!--<div class="center-content">
+      <button id="reset" onclick="reset()">Reset</button>
+    </div>-->
+
+    <table>
+      <tr>
+        <td id='spring_curr_year_label' class='division-label'/>
+        <td id='spring_curr_year_division' class='division' />
+      </tr>
+      <tr>
+        <td id='fall_curr_year_label' class='division-label'/>
+        <td id='fall_curr_year_division' class='division' />
+      </tr>
+      <tr>
+        <td id='spring_next_year_label' class='division-label'/>
+        <td id='spring_next_year_division' class='division' />
+      </tr>
+      <tr>
+        <td id='fall_next_year_label' class='division-label'/>
+        <td id='fall_next_year_division' class='division' />
+      </tr>
+     </table>
+  </div>
+  <div id="agegroups">
+    <table>
+        <thead>
+<tr>
+    <th colspan="2">Age Matrix</th>
+</tr>
+<tr><th>Age Group</th><th>Birthday</th></tr>
+</thead><tbody><tr>
+            <td>U8</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>U10</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>U12</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>U14</td>
+            <td></td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  </body>
