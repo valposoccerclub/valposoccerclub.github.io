@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=width=device-width, initial-scale=1">
+    <style>
+      button {
+        border: none;
+        border-radius: 3px;
+      }
+
+      button#check {
+        height: 30px;
+        width: 200px;
+        background: #108C43;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-weight: 200;
+        color: rgb(255, 255, 255);
+      }
+      @media only screen and (max-width: 400px) {
+        button#check {
+          width: 100%;
+        }
+      }
+
+      button#reset {
+        height: 30px;
+        width: 200px;
+        background: rgb(235, 235, 235);
+        font-weight: 200;
+        margin-bottom: 25px;
+      }
+
+      .center-content {
+        text-align: center;
+        width: 100%
+      }
+
+      div#checker {
+        text-align: center;
+        width: 100%
+      }
+
+      button, label, input {
+        font-size: 18px;
+        font-family: "Lato",sans-serif;
+      }
+
+      td {
+        font-size: 18px;
+        font-family: "Lato",sans-serif;
+        width: 50%
+      }
+
+      div#birthday-entry {
+        display: inline-block;
+        width: 100%;
+      }
+
+      td {
+        padding: 10px
+      }
+
+      td.division-label {
+        text-align: right;
+      }
+
+      td.division {
+        text-align: left;
+      }
+
+      table {
+        width: 415px;
+        margin: auto;
+        table-layout: fixed;
+        border-collapse:collapse;
+        border: 1px solid;
+      }
+      @media only screen and (max-width: 415px) {
+        table {
+          width: 100%;
+        }
+      }
+
+      tr:nth-child(even) {
+        background: #efefef
+      }
+
+      tr:nth-child(odd) {
+        background: #FFF
+      }
+    </style>
+  </head>
+
+  <script type="text/javascript">
+    const APRIL = 3;
+    const JULY = 6;
+    const AUGUST = 7;
+
+    const DIVISIONS = [8, 10, 12, 14];
+
+    const SPRING = 'spring';
+    const FALL = 'fall';
+    const TOO_OLD = 'Too old'
+    const TOO_YOUNG = 'Too young';
+
+    function getDivision(birthday, seasonYear, seasonSeason) {
+      var division;
+      for (const possibleDivision of DIVISIONS) {
+        var earliestBirthdayYear = seasonYear - possibleDivision - (seasonSeason == SPRING ? 1 : 0);
+        var earliestBirthday = new Date(earliestBirthdayYear, JULY, 31);
+        if (birthday > earliestBirthday) {
+          division = possibleDivision;
+          break;
+        }
+      }
+      if (division == null) {
+        return TOO_OLD;
+      }
+      if (division == 8) {
+        var latestBirthday = seasonSeason == FALL ? new Date(seasonYear - 6, JULY, 31) : new Date(seasonYear - 6, APRIL, 1);
+        if (birthday > latestBirthday) {
+          return TOO_YOUNG;
+        }
+      }
+      return 'U' + division;
+    }
+
+    function updateDivision(season, updateCurrentYear) {
+      var prefix = `${season == SPRING ? 'spring' : 'fall'}_${updateCurrentYear ? 'curr_year' : 'next_year'}`;
+      var label = document.getElementById(`${prefix}_label`)
+      var division = document.getElementById(`${prefix}_division`)
+      if (label && division) {
+        label.innerHTML = '';
+        division.innerHTML = '';
+        var currentYear = new Date().getFullYear();
+        var year = updateCurrentYear ? currentYear : currentYear + 1;
+        label.appendChild(
+           document.createTextNode(`${season == SPRING ? 'Spring' : 'Fall'} ${year}`))
+
+        var divisionText;
+        var birthday = document.getElementById("birthday");
+        if (birthday.value) {
+          divisionText = getDivision(new Date(birthday.value), year, season);
+        } else {
+          divisionText = '--'
+        }
+        division.appendChild(document.createTextNode(divisionText))
+      }
+    }
+
+    function updateDivisions() {
+      updateDivision(SPRING, true);
+      updateDivision(SPRING, false);
+      updateDivision(FALL, true);
+      updateDivision(FALL, false);
+    }
+
+    function reset() {
+      document.getElementById("birthday").value = '';
+      updateDivisions();
+    }
+
+  </script>
+
+  <body onload='updateDivisions()'>
+
+  <div id="checker">
+    <div id="birthday-entry">
+      <label for="birthday">Birthday:</label>
+      <input type="date" id="birthday" name="birthday">
+    </div>
+    <div class="center-content">
+      <button id="check" onclick="updateDivisions()">Check Divisions</button>
+      <button id="reset" onclick="reset()">Reset</button>
+    </div>
+    <!--<div class="center-content">
+      <button id="reset" onclick="reset()">Reset</button>
+    </div>-->
+
+    <table>
+      <tr>
+        <td id='spring_curr_year_label' class='division-label'/>
+        <td id='spring_curr_year_division' class='division' />
+      </tr>
+      <tr>
+        <td id='fall_curr_year_label' class='division-label'/>
+        <td id='fall_curr_year_division' class='division' />
+      </tr>
+      <tr>
+        <td id='spring_next_year_label' class='division-label'/>
+        <td id='spring_next_year_division' class='division' />
+      </tr>
+      <tr>
+        <td id='fall_next_year_label' class='division-label'/>
+        <td id='fall_next_year_division' class='division' />
+      </tr>
+     </table>
+  </div>
+
+  </body>
+
+  <script>
+
+  function checkDate(expected, birthday, year, season) {
+    var division = getDivision(birthday, year, season);
+    var message;
+    var func;
+    if (division == expected) {
+      message = 'PASS';
+      func = console.log;
+    } else {
+      message = 'FAIL';
+      func = console.error;
+    }
+    func(message + ': expected[' + expected + '] got[' + division + '] birthday[' + birthday.toISOString().slice(0, 10) + '] year[' + year + '] season=[' + season + ']');
+  }
+
+  // 2019-07-31 birthday
+
+  checkDate(TOO_YOUNG, new Date(2019, JULY, 31), 2022, SPRING);
+
+  checkDate(TOO_YOUNG, new Date(2019, JULY, 31), 2022, FALL);
+  checkDate(TOO_YOUNG, new Date(2019, JULY, 31), 2023, SPRING);
+
+  checkDate('U6', new Date(2019, JULY, 31), 2023, FALL);
+  checkDate('U6', new Date(2019, JULY, 31), 2024, SPRING);
+
+  checkDate('U6', new Date(2019, JULY, 31), 2024, FALL);
+  checkDate('U6', new Date(2019, JULY, 31), 2025, SPRING);
+
+  checkDate('U8', new Date(2019, JULY, 31), 2025, FALL);
+  checkDate('U8', new Date(2019, JULY, 31), 2026, SPRING);
+
+  checkDate('U8', new Date(2019, JULY, 31), 2026, FALL);
+  checkDate('U8', new Date(2019, JULY, 31), 2027, SPRING);
+
+  checkDate('U10', new Date(2019, JULY, 31), 2027, FALL);
+  checkDate('U10', new Date(2019, JULY, 31), 2028, SPRING);
+
+  checkDate('U18', new Date(2019, JULY, 31), 2035, FALL);
+  checkDate('U18', new Date(2019, JULY, 31), 2036, SPRING);
+
+  checkDate('U18', new Date(2019, JULY, 31), 2036, FALL);
+  checkDate('U18', new Date(2019, JULY, 31), 2037, SPRING);
+
+  checkDate(TOO_OLD, new Date(2019, JULY, 31), 2037, FALL);
+  checkDate(TOO_OLD, new Date(2019, JULY, 31), 2038, SPRING);
+
+  // 2019-08-01 birthday
+
+  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2022, SPRING);
+
+  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2022, FALL);
+  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2023, SPRING);
+
+  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2023, FALL);
+  checkDate('U6', new Date(2019, AUGUST, 1), 2024, SPRING);
+
+  checkDate('U6', new Date(2019, AUGUST, 1), 2024, FALL);
+  checkDate('U6', new Date(2019, AUGUST, 1), 2025, SPRING);
+
+  checkDate('U6', new Date(2019, AUGUST, 1), 2025, FALL);
+  checkDate('U6', new Date(2019, AUGUST, 1), 2026, SPRING);
+   
+  checkDate('U8', new Date(2019, AUGUST, 1), 2026, FALL);
+  checkDate('U8', new Date(2019, AUGUST, 1), 2027, SPRING);
+
+  checkDate('U8', new Date(2019, AUGUST, 1), 2027, FALL);
+  checkDate('U8', new Date(2019, AUGUST, 1), 2028, SPRING);
+
+  checkDate('U10', new Date(2019, AUGUST, 1), 2028, FALL);
+  checkDate('U10', new Date(2019, AUGUST, 1), 2029, SPRING);
+
+  checkDate('U18', new Date(2019, AUGUST, 1), 2036, FALL);
+  checkDate('U18', new Date(2019, AUGUST, 1), 2037, SPRING);
+
+  checkDate('U18', new Date(2019, AUGUST, 1), 2037, FALL);
+  checkDate('U18', new Date(2019, AUGUST, 1), 2038, SPRING);
+
+  checkDate(TOO_OLD, new Date(2019, AUGUST, 1), 2038, FALL);
+  checkDate(TOO_OLD, new Date(2019, AUGUST, 1), 2039, SPRING);
+
+  // 2019-04-01 birthday
+
+  checkDate(TOO_YOUNG, new Date(2019, APRIL, 2), 2023, SPRING);
+  checkDate('U6', new Date(2019, APRIL, 1), 2023, SPRING);
+  </script>
+
+</html>
