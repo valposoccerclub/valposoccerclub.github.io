@@ -1,290 +1,216 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=width=device-width, initial-scale=1">
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Age Division by Season</title>
     <style>
-      button {
-        border: none;
-        border-radius: 3px;
-      }
-
-      button#check {
-        height: 30px;
-        width: 200px;
-        background: #108C43;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        font-weight: 200;
-        color: rgb(255, 255, 255);
-      }
-      @media only screen and (max-width: 400px) {
-        button#check {
-          width: 100%;
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
         }
-      }
 
-      button#reset {
-        height: 30px;
-        width: 200px;
-        background: rgb(235, 235, 235);
-        font-weight: 200;
-        margin-bottom: 25px;
-      }
+        input,
+        button {
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
 
-      .center-content {
-        text-align: center;
-        width: 100%
-      }
+        button {
+            background-color: #108C43;
+            color: rgb(255, 255, 255);
+        }
 
-      div#checker {
-        text-align: center;
-        width: 100%
-      }
-
-      button, label, input {
-        font-size: 18px;
-        font-family: "Lato",sans-serif;
-      }
-
-      td {
-        font-size: 18px;
-        font-family: "Lato",sans-serif;
-        width: 50%
-      }
-
-      div#birthday-entry {
-        display: inline-block;
-        width: 100%;
-      }
-
-      td {
-        padding: 10px
-      }
-
-      td.division-label {
-        text-align: right;
-      }
-
-      td.division {
-        text-align: left;
-      }
-
-      table {
-        width: 415px;
-        margin: auto;
-        table-layout: fixed;
-        border-collapse:collapse;
-        border: 1px solid;
-      }
-      @media only screen and (max-width: 415px) {
         table {
-          width: 100%;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f9f9f9;
         }
-      }
 
-      tr:nth-child(even) {
-        background: #efefef
-      }
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
 
-      tr:nth-child(odd) {
-        background: #FFF
-      }
+        th {
+            background-color: #108C43;
+            color: rgb(255, 255, 255);
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
-  </head>
+</head>
 
-  <script type="text/javascript">
-    const APRIL = 3;
-    const JULY = 6;
-    const AUGUST = 7;
+<body>
 
-    const DIVISIONS = [8, 10, 12, 14];
-
-    const SPRING = 'spring';
-    const FALL = 'fall';
-    const TOO_OLD = 'Too old'
-    const TOO_YOUNG = 'Too young';
-
-    function getDivision(birthday, seasonYear, seasonSeason) {
-      var division;
-      for (const possibleDivision of DIVISIONS) {
-        var earliestBirthdayYear = seasonYear - possibleDivision - (seasonSeason == SPRING ? 1 : 0);
-        var earliestBirthday = new Date(earliestBirthdayYear, JULY, 31);
-        if (birthday > earliestBirthday) {
-          division = possibleDivision;
-          break;
-        }
-      }
-      if (division == null) {
-        return TOO_OLD;
-      }
-      if (division == 8) {
-        var latestBirthday = seasonSeason == FALL ? new Date(seasonYear - 6, JULY, 31) : new Date(seasonYear - 6, APRIL, 1);
-        if (birthday > latestBirthday) {
-          return TOO_YOUNG;
-        }
-      }
-      return 'U' + division;
-    }
-
-    function updateDivision(season, updateCurrentYear) {
-      var prefix = `${season == SPRING ? 'spring' : 'fall'}_${updateCurrentYear ? 'curr_year' : 'next_year'}`;
-      var label = document.getElementById(`${prefix}_label`)
-      var division = document.getElementById(`${prefix}_division`)
-      if (label && division) {
-        label.innerHTML = '';
-        division.innerHTML = '';
-        var currentYear = new Date().getFullYear();
-        var year = updateCurrentYear ? currentYear : currentYear + 1;
-        label.appendChild(
-           document.createTextNode(`${season == SPRING ? 'Spring' : 'Fall'} ${year}`))
-
-        var divisionText;
-        var birthday = document.getElementById("birthday");
-        if (birthday.value) {
-          divisionText = getDivision(new Date(birthday.value), year, season);
-        } else {
-          divisionText = '--'
-        }
-        division.appendChild(document.createTextNode(divisionText))
-      }
-    }
-
-    function updateDivisions() {
-      updateDivision(SPRING, true);
-      updateDivision(SPRING, false);
-      updateDivision(FALL, true);
-      updateDivision(FALL, false);
-    }
-
-    function reset() {
-      document.getElementById("birthday").value = '';
-      updateDivisions();
-    }
-
-  </script>
-
-  <body onload='updateDivisions()'>
-
-  <div id="checker">
-    <div id="birthday-entry">
-      <label for="birthday">Birthday:</label>
-      <input type="date" id="birthday" name="birthday">
+    <!-- <label for="birthdate">Enter Birthdate:</label><br> -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;">
+        <label for="birthdate">Enter Birthdate:</label>
+        <input type="date" id="birthdate">
+        <button onclick="checkSeasonDivisions()">Check Divisions</button>
+        <button onclick="resetForm()">Reset</button>
     </div>
-    <div class="center-content">
-      <button id="check" onclick="updateDivisions()">Check Divisions</button>
-      <button id="reset" onclick="reset()">Reset</button>
-    </div>
-    <!--<div class="center-content">
-      <button id="reset" onclick="reset()">Reset</button>
-    </div>-->
 
-    <table>
-      <tr>
-        <td id='spring_curr_year_label' class='division-label'/>
-        <td id='spring_curr_year_division' class='division' />
-      </tr>
-      <tr>
-        <td id='fall_curr_year_label' class='division-label'/>
-        <td id='fall_curr_year_division' class='division' />
-      </tr>
-      <tr>
-        <td id='spring_next_year_label' class='division-label'/>
-        <td id='spring_next_year_division' class='division' />
-      </tr>
-      <tr>
-        <td id='fall_next_year_label' class='division-label'/>
-        <td id='fall_next_year_division' class='division' />
-      </tr>
-     </table>
-  </div>
+    <table id="resultsTable" class="hidden">
+        <thead>
+            <tr>
+                <th>Age</th>
+                <th>Season</th>
+                <th>Division</th>
+            </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+    </table>
 
-  </body>
+    <script>
+        function getUpcomingSeasons(currentDate = new Date()) {
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            const seasons = [];
 
-  <script>
+            let startSeason, startYear;
 
-  function checkDate(expected, birthday, year, season) {
-    var division = getDivision(birthday, year, season);
-    var message;
-    var func;
-    if (division == expected) {
-      message = 'PASS';
-      func = console.log;
-    } else {
-      message = 'FAIL';
-      func = console.error;
-    }
-    func(message + ': expected[' + expected + '] got[' + division + '] birthday[' + birthday.toISOString().slice(0, 10) + '] year[' + year + '] season=[' + season + ']');
-  }
+            if (currentMonth <= 4) {
+                startSeason = "Fall";
+                startYear = currentYear;
+            } else if (currentMonth <= 9) {
+                startSeason = "Spring";
+                startYear = currentYear + 1;
+            } else {
+                startSeason = "Spring";
+                startYear = currentYear + 1;
+            }
 
-  // 2019-07-31 birthday
+            for (let i = 0; i < 4; i++) {
+                const label = `${startSeason} ${startYear}`;
+                // Assume Fall starts Sep 1 and Spring starts Mar 1
+                const seasonDate = new Date(
+                    startSeason === "Fall" ? startYear : startYear,
+                    startSeason === "Fall" ? 8 : 2, // Sep = 8, Mar = 2
+                    1
+                );
+                seasons.push({ label, seasonDate });
 
-  checkDate(TOO_YOUNG, new Date(2019, JULY, 31), 2022, SPRING);
+                if (startSeason === "Fall") {
+                    startSeason = "Spring";
+                    startYear++;
+                } else {
+                    startSeason = "Fall";
+                }
+            }
 
-  checkDate(TOO_YOUNG, new Date(2019, JULY, 31), 2022, FALL);
-  checkDate(TOO_YOUNG, new Date(2019, JULY, 31), 2023, SPRING);
+            return seasons;
+        }
 
-  checkDate('U6', new Date(2019, JULY, 31), 2023, FALL);
-  checkDate('U6', new Date(2019, JULY, 31), 2024, SPRING);
+        function calculateAge(birthDate, onDate) {
+            const birth = new Date(birthDate);
+            let age = onDate.getFullYear() - birth.getFullYear();
+            const m = onDate.getMonth() - birth.getMonth();
 
-  checkDate('U6', new Date(2019, JULY, 31), 2024, FALL);
-  checkDate('U6', new Date(2019, JULY, 31), 2025, SPRING);
+            if (m < 0 || (m === 0 && onDate.getDate() < birth.getDate())) {
+                age--;
+            }
 
-  checkDate('U8', new Date(2019, JULY, 31), 2025, FALL);
-  checkDate('U8', new Date(2019, JULY, 31), 2026, SPRING);
+            return age;
+        }
 
-  checkDate('U8', new Date(2019, JULY, 31), 2026, FALL);
-  checkDate('U8', new Date(2019, JULY, 31), 2027, SPRING);
+        function getDivision(age) {
+            if (age < 6) return "Too young";
+            if (age <= 7) return "U8";
+            if (age <= 9) return "U10";
+            if (age <= 11) return "U12";
+            if (age <= 13) return "U14";
+            // if (age <= 15) return "U16";
+            // if (age <= 17) return "U18";
+            // if(age <= 18) return "U19";
+            return "Too old";
+        }
 
-  checkDate('U10', new Date(2019, JULY, 31), 2027, FALL);
-  checkDate('U10', new Date(2019, JULY, 31), 2028, SPRING);
+        function checkSeasonDivisionsold() {
+            const birthdate = document.getElementById("birthdate").value;
+            if (!birthdate) {
+                alert("Please enter a valid birthdate.");
+                return;
+            }
 
-  checkDate('U18', new Date(2019, JULY, 31), 2035, FALL);
-  checkDate('U18', new Date(2019, JULY, 31), 2036, SPRING);
+            const resultsBody = document.getElementById("resultsBody");
+            resultsBody.innerHTML = "";
 
-  checkDate('U18', new Date(2019, JULY, 31), 2036, FALL);
-  checkDate('U18', new Date(2019, JULY, 31), 2037, SPRING);
+            const seasons = getUpcomingSeasons(new Date());
 
-  checkDate(TOO_OLD, new Date(2019, JULY, 31), 2037, FALL);
-  checkDate(TOO_OLD, new Date(2019, JULY, 31), 2038, SPRING);
+            seasons.forEach(season => {
+                const age = calculateAge(birthdate, season.seasonDate);
+                const division = getDivision(age);
 
-  // 2019-08-01 birthday
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${age}</td><td>${season.label}</td><td>${division}</td>`;
+                resultsBody.appendChild(row);
+            });
 
-  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2022, SPRING);
+            document.getElementById("resultsTable").classList.remove("hidden");
+        }
 
-  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2022, FALL);
-  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2023, SPRING);
+        function checkSeasonDivisions() {
+            const birthdateInput = document.getElementById("birthdate");
+            const birthdate = birthdateInput.value;
 
-  checkDate(TOO_YOUNG, new Date(2019, AUGUST, 1), 2023, FALL);
-  checkDate('U6', new Date(2019, AUGUST, 1), 2024, SPRING);
+            if (!birthdate) {
+                alert("Please enter a birthdate.");
+                return;
+            }
 
-  checkDate('U6', new Date(2019, AUGUST, 1), 2024, FALL);
-  checkDate('U6', new Date(2019, AUGUST, 1), 2025, SPRING);
+            const birthDateObj = new Date(birthdate);
+            const today = new Date();
 
-  checkDate('U6', new Date(2019, AUGUST, 1), 2025, FALL);
-  checkDate('U6', new Date(2019, AUGUST, 1), 2026, SPRING);
-   
-  checkDate('U8', new Date(2019, AUGUST, 1), 2026, FALL);
-  checkDate('U8', new Date(2019, AUGUST, 1), 2027, SPRING);
+            if (birthDateObj >= today) {
+                alert("Birthdate must be in the past.");
+                return;
+            }
 
-  checkDate('U8', new Date(2019, AUGUST, 1), 2027, FALL);
-  checkDate('U8', new Date(2019, AUGUST, 1), 2028, SPRING);
+            const minAge = 6;
+            const ageToday = calculateAge(birthDateObj, today);
+            if (ageToday < minAge) {
+                alert("Child must be at least 6 years old.");
+                return;
+            }
 
-  checkDate('U10', new Date(2019, AUGUST, 1), 2028, FALL);
-  checkDate('U10', new Date(2019, AUGUST, 1), 2029, SPRING);
+            const resultsBody = document.getElementById("resultsBody");
+            resultsBody.innerHTML = "";
 
-  checkDate('U18', new Date(2019, AUGUST, 1), 2036, FALL);
-  checkDate('U18', new Date(2019, AUGUST, 1), 2037, SPRING);
+            const seasons = getUpcomingSeasons(today);
 
-  checkDate('U18', new Date(2019, AUGUST, 1), 2037, FALL);
-  checkDate('U18', new Date(2019, AUGUST, 1), 2038, SPRING);
+            seasons.forEach(season => {
+                const age = calculateAge(birthdate, season.seasonDate);
+                const division = getDivision(age);
 
-  checkDate(TOO_OLD, new Date(2019, AUGUST, 1), 2038, FALL);
-  checkDate(TOO_OLD, new Date(2019, AUGUST, 1), 2039, SPRING);
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                      <td>${age}</td>
+      <td>${season.label}</td>
+      <td>${division}</td>
+    `;
+                resultsBody.appendChild(row);
+            });
 
-  // 2019-04-01 birthday
+            document.getElementById("resultsTable").classList.remove("hidden");
+        }
 
-  checkDate(TOO_YOUNG, new Date(2019, APRIL, 2), 2023, SPRING);
-  checkDate('U6', new Date(2019, APRIL, 1), 2023, SPRING);
-  </script>
+
+        function resetForm() {
+            document.getElementById("birthdate").value = "";
+            document.getElementById("resultsBody").innerHTML = "";
+            document.getElementById("resultsTable").classList.add("hidden");
+        }
+    </script>
+
+</body>
 
 </html>
