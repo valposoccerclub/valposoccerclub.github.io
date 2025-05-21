@@ -1,240 +1,216 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=width=device-width, initial-scale=1">
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Age Division by Season</title>
     <style>
-      button {
-        border: none;
-        border-radius: 3px;
-      }
-
-      button#check {
-        height: 30px;
-        width: 200px;
-        background: #108C43;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        font-weight: 200;
-        color: rgb(255, 255, 255);
-      }
-      @media only screen and (max-width: 400px) {
-        button#check {
-          width: 100%;
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
         }
-      }
 
-      button#reset {
-        height: 30px;
-        width: 200px;
-        background: rgb(235, 235, 235);
-        font-weight: 200;
-        margin-bottom: 25px;
-      }
+        input,
+        button {
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
 
-      .center-content {
-        text-align: center;
-        width: 100%
-      }
+        button {
+            background-color: #108C43;
+            color: rgb(255, 255, 255);
+        }
 
-      div#checker {
-        text-align: center;
-        width: 40%;
-        float: left;
-      }
-      div#agegroups {
-        text-align: center;
-        width: 40%;
-        float: right;
-      }
-
-      button, label, input {
-        font-size: 18px;
-        font-family: "Lato",sans-serif;
-      }
-
-      td {
-        font-size: 18px;
-        font-family: "Lato",sans-serif;
-        width: 50%
-      }
-
-      div#birthday-entry {
-        display: inline-block;
-        width: 100%;
-      }
-
-      td {
-        padding: 10px
-      }
-
-      td.division-label {
-        text-align: right;
-      }
-
-      td.division {
-        text-align: left;
-      }
-
-      table {
-        width: 415px;
-        margin: auto;
-        table-layout: fixed;
-        border-collapse:collapse;
-        border: 1px solid;
-      }
-      @media only screen and (max-width: 415px) {
         table {
-          width: 100%;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f9f9f9;
         }
-      }
 
-      tr:nth-child(even) {
-        background: #efefef
-      }
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
 
-      tr:nth-child(odd) {
-        background: #FFF
-      }
-      th {
-        background-color:#108C43!important;
-        color:#FFF;
-        font-weight: bold;
-        font-size: 18px;
-        font-family: "Lato",sans-serif;
-        width: 50%
-      }
+        th {
+            background-color: #108C43;
+            color: rgb(255, 255, 255);
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
-  </head>
+</head>
 
-  <script type="text/javascript">
-    const APRIL = 3;
-    const JULY = 6;
-    const AUGUST = 7;
+<body>
 
-    const DIVISIONS = [8, 10, 12, 14];
-
-    const SPRING = 'spring';
-    const FALL = 'fall';
-    const TOO_OLD = 'Too old'
-    const TOO_YOUNG = 'Too young';
-
-    function getDivision(birthday, seasonYear, seasonSeason) {
-      var division;
-      for (const possibleDivision of DIVISIONS) {
-        var earliestBirthdayYear = seasonYear - possibleDivision - (seasonSeason == SPRING ? 1 : 0);
-        var earliestBirthday = new Date(earliestBirthdayYear, JULY, 31);
-        if (birthday > earliestBirthday) {
-          division = possibleDivision;
-          break;
-        }
-      }
-      if (division == null) {
-        return TOO_OLD;
-      }
-      if (division == 8) {
-        var latestBirthday = seasonSeason == FALL ? new Date(seasonYear - 6, JULY, 31) : new Date(seasonYear - 6, APRIL, 1);
-        if (birthday > latestBirthday) {
-          return TOO_YOUNG;
-        }
-      }
-      return 'U' + division;
-    }
-
-    function updateDivision(season, updateCurrentYear) {
-      var prefix = `${season == SPRING ? 'spring' : 'fall'}_${updateCurrentYear ? 'curr_year' : 'next_year'}`;
-      var label = document.getElementById(`${prefix}_label`)
-      var division = document.getElementById(`${prefix}_division`)
-      if (label && division) {
-        label.innerHTML = '';
-        division.innerHTML = '';
-        var currentYear = new Date().getFullYear();
-        var year = updateCurrentYear ? currentYear : currentYear + 1;
-        label.appendChild(
-           document.createTextNode(`${season == SPRING ? 'Spring' : 'Fall'} ${year}`))
-
-        var divisionText;
-        var birthday = document.getElementById("birthday");
-        if (birthday.value) {
-          divisionText = getDivision(new Date(birthday.value), year, season);
-        } else {
-          divisionText = '--'
-        }
-        division.appendChild(document.createTextNode(divisionText))
-      }
-    }
-
-    function updateDivisions() {
-      updateDivision(SPRING, true);
-      updateDivision(SPRING, false);
-      updateDivision(FALL, true);
-      updateDivision(FALL, false);
-    }
-
-    function reset() {
-      document.getElementById("birthday").value = '';
-      updateDivisions();
-    }
-
-  </script>
-
-  <body onload='updateDivisions()'>
-
-  <div id="checker">
-    <div id="birthday-entry">
-      <label for="birthday">Birthday:</label>
-      <input type="date" id="birthday" name="birthday">
+    <!-- <label for="birthdate">Enter Birthdate:</label><br> -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;">
+        <label for="birthdate">Enter Birthdate:</label>
+        <input type="date" id="birthdate">
+        <button onclick="checkSeasonDivisions()">Check Divisions</button>
+        <button onclick="resetForm()">Reset</button>
     </div>
-    <div class="center-content">
-      <button id="check" onclick="updateDivisions()">Check Divisions</button>
-      <button id="reset" onclick="reset()">Reset</button>
-    </div>
-    <!--<div class="center-content">
-      <button id="reset" onclick="reset()">Reset</button>
-    </div>-->
 
-    <table>
-      <tr>
-        <td id='spring_curr_year_label' class='division-label'/>
-        <td id='spring_curr_year_division' class='division' />
-      </tr>
-      <tr>
-        <td id='fall_curr_year_label' class='division-label'/>
-        <td id='fall_curr_year_division' class='division' />
-      </tr>
-      <tr>
-        <td id='spring_next_year_label' class='division-label'/>
-        <td id='spring_next_year_division' class='division' />
-      </tr>
-      <tr>
-        <td id='fall_next_year_label' class='division-label'/>
-        <td id='fall_next_year_division' class='division' />
-      </tr>
-     </table>
-  </div>
-  <div id="agegroups">
-    <table>
+    <table id="resultsTable" class="hidden">
         <thead>
-<tr>
-    <th colspan="2">Age Matrix</th>
-</tr>
-<tr><th>Age Group</th><th>Birthday</th></tr>
-</thead><tbody><tr>
-            <td>U8</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>U10</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>U12</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>U14</td>
-            <td></td>
-        </tr></tbody>
+            <tr>
+                <th>Age</th>
+                <th>Season</th>
+                <th>Division</th>
+            </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
     </table>
-  </div>
 
-  </body>
+    <script>
+        function getUpcomingSeasons(currentDate = new Date()) {
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            const seasons = [];
+
+            let startSeason, startYear;
+
+            if (currentMonth <= 4) {
+                startSeason = "Fall";
+                startYear = currentYear;
+            } else if (currentMonth <= 9) {
+                startSeason = "Spring";
+                startYear = currentYear + 1;
+            } else {
+                startSeason = "Spring";
+                startYear = currentYear + 1;
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const label = `${startSeason} ${startYear}`;
+                // Assume Fall starts Sep 1 and Spring starts Mar 1
+                const seasonDate = new Date(
+                    startSeason === "Fall" ? startYear : startYear,
+                    startSeason === "Fall" ? 8 : 2, // Sep = 8, Mar = 2
+                    1
+                );
+                seasons.push({ label, seasonDate });
+
+                if (startSeason === "Fall") {
+                    startSeason = "Spring";
+                    startYear++;
+                } else {
+                    startSeason = "Fall";
+                }
+            }
+
+            return seasons;
+        }
+
+        function calculateAge(birthDate, onDate) {
+            const birth = new Date(birthDate);
+            let age = onDate.getFullYear() - birth.getFullYear();
+            const m = onDate.getMonth() - birth.getMonth();
+
+            if (m < 0 || (m === 0 && onDate.getDate() < birth.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+
+        function getDivision(age) {
+            if (age < 6) return "Too young";
+            if (age <= 7) return "U8";
+            if (age <= 9) return "U10";
+            if (age <= 11) return "U12";
+            if (age <= 13) return "U14";
+            // if (age <= 15) return "U16";
+            // if (age <= 17) return "U18";
+            // if(age <= 18) return "U19";
+            return "Too old";
+        }
+
+        function checkSeasonDivisionsold() {
+            const birthdate = document.getElementById("birthdate").value;
+            if (!birthdate) {
+                alert("Please enter a valid birthdate.");
+                return;
+            }
+
+            const resultsBody = document.getElementById("resultsBody");
+            resultsBody.innerHTML = "";
+
+            const seasons = getUpcomingSeasons(new Date());
+
+            seasons.forEach(season => {
+                const age = calculateAge(birthdate, season.seasonDate);
+                const division = getDivision(age);
+
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${age}</td><td>${season.label}</td><td>${division}</td>`;
+                resultsBody.appendChild(row);
+            });
+
+            document.getElementById("resultsTable").classList.remove("hidden");
+        }
+
+        function checkSeasonDivisions() {
+            const birthdateInput = document.getElementById("birthdate");
+            const birthdate = birthdateInput.value;
+
+            if (!birthdate) {
+                alert("Please enter a birthdate.");
+                return;
+            }
+
+            const birthDateObj = new Date(birthdate);
+            const today = new Date();
+
+            if (birthDateObj >= today) {
+                alert("Birthdate must be in the past.");
+                return;
+            }
+
+            const minAge = 6;
+            const ageToday = calculateAge(birthDateObj, today);
+            if (ageToday < minAge) {
+                alert("Child must be at least 6 years old.");
+                return;
+            }
+
+            const resultsBody = document.getElementById("resultsBody");
+            resultsBody.innerHTML = "";
+
+            const seasons = getUpcomingSeasons(today);
+
+            seasons.forEach(season => {
+                const age = calculateAge(birthdate, season.seasonDate);
+                const division = getDivision(age);
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                      <td>${age}</td>
+      <td>${season.label}</td>
+      <td>${division}</td>
+    `;
+                resultsBody.appendChild(row);
+            });
+
+            document.getElementById("resultsTable").classList.remove("hidden");
+        }
+
+
+        function resetForm() {
+            document.getElementById("birthdate").value = "";
+            document.getElementById("resultsBody").innerHTML = "";
+            document.getElementById("resultsTable").classList.add("hidden");
+        }
+    </script>
+
+</body>
+
+</html>
