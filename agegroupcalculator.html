@@ -139,7 +139,7 @@
 
             seasons.forEach(({ seasonLabel, leagueYear }) => {
                 // Use August 1 of leagueYear as cutoff date
-                const cutoffDate = new Date(leagueYear, 7, 1);
+                const cutoffDate = new Date(leagueYear, 6, 30);
                 const age = calculateAge(birthdate, cutoffDate);
                 
                 const divisionYear = seasonLabel.trim().split(' ');
@@ -236,3 +236,4 @@
 </body>
 
 </html>
+
