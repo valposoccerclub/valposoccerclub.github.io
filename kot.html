@@ -5,10 +5,18 @@
   <body>
     <object id="kottournamentarea" width="100%" height="800px" type="text/html" data="https://challenge.place/c/vsc-kick-or-treat"></object>
         <script type="text/javascript">
-    window.onload=function(){
-      document.getElementByClassName('GoogleActiveViewElement');
-document.getElementByClassName('GoogleActiveViewInnerContainer');
-    }
+    //window.onload=function(){
+      //document.getElementByClassName('GoogleActiveViewElement');
+//document.getElementByClassName('GoogleActiveViewInnerContainer');
+    //}
+          window.onload=function(){
+            var iframe = document.getElementById('kottournamentarea');
+            ifrom.onload=function(){
+              var doc = iframe.contentWindow.document;
+              doc.getElementByClassName('GoogleActiveViewElement').style.display='none';
+              doc.getElementByClassName('GoogleActiveViewInnerContainer').style.display='none';
+            }
+          }
     </script>
   </body>
 </html>
