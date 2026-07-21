@@ -296,6 +296,105 @@
         box-shadow: none;
       }
     }
+
+    /* Mobile and tablet */
+@media (max-width: 800px) {
+  .schedule-page {
+    width: 100%;
+    margin: 20px 0;
+    padding: 0 10px;
+  }
+
+  .schedule-title,
+  .schedule-description {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .schedule-title {
+    font-size: 1.75rem;
+  }
+
+  .schedule-description {
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+  }
+
+  /*
+    Allows the table to scroll horizontally instead of
+    squeezing everything into the screen.
+  */
+  .schedule-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+  }
+
+  #schedule-table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  #schedule-table th,
+  #schedule-table td {
+    padding: 6px;
+  }
+
+  /*
+    Keeps each day column wide enough to remain readable.
+  */
+  #schedule-table thead th:not(:first-child),
+  #schedule-table tbody td {
+    min-width: 135px;
+  }
+
+  /*
+    Keep the division column visible while scrolling.
+  */
+  #schedule-table thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 4;
+    min-width: 105px;
+  }
+
+  .division-label {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    width: 105px;
+    min-width: 105px;
+    max-width: 105px;
+    white-space: normal;
+    background: #ffffff;
+    box-shadow: 4px 0 6px rgb(0 0 0 / 6%);
+  }
+
+  .team-name {
+    min-height: 42px;
+    padding: 9px 7px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    box-shadow: none;
+  }
+
+  .division-heading th {
+    padding: 22px 4px 8px !important;
+    font-size: 1.05rem;
+  }
+
+  .division-heading-label::before {
+    height: 20px;
+  }
+
+  .empty-slot {
+    min-width: 135px;
+  }
+}
   </style>
 </head>
 
