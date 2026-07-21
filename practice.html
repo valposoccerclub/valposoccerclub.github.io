@@ -1,0 +1,97 @@
+<style>
+  .practice-schedule {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: Arial, sans-serif;
+  }
+
+  .schedule-scroll {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgb(0 0 0 / 10%);
+  }
+
+  #schedule-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    background: white;
+  }
+
+  #schedule-table th,
+  #schedule-table td {
+    padding: 0.85rem;
+    /* border: 1px solid  #f2f2f2; */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  #schedule-table thead th {
+    position: sticky;
+    top: 0;
+    background: #059d55;
+    color: white;
+    font-size: 0.95rem;
+  }
+
+  #schedule-table tbody th {
+    position: sticky;
+    left: 0;
+    min-width: 130px;
+    background: #f2f2f2;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  /* #schedule-table tbody tr:nth-child(even) td {
+    background: #f2f2f2;
+  } */
+
+  .team-name {
+    display: block;
+    padding: 0.55rem 0.7rem;
+    
+    border-radius: 4px;
+    background: lightgray;
+    font-weight: 600;
+  }
+
+  .team-name.u8 {
+    border-left: 4px solid yellow;
+  }
+
+  .team-name.u10 {
+    border-left: 4px solid green;
+  }
+
+  .team-name.u12 {
+    border-left: 4px solid #007bff;
+  }
+
+  .team-name.u14 {
+    border-left: 4px solid #dc3545;
+  }
+
+  .empty-slot {
+    /* background: #fafafa; */
+  }
+
+  #schedule-loading {
+    padding: 2rem;
+    text-align: center;
+  }
+</style>
+<div class="practice-schedule">
+  <div id="schedule-loading">Loading practice schedule...</div>
+
+  <div class="schedule-scroll">
+    <table id="schedule-table">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="schedule.js"></script>
