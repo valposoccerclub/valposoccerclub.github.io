@@ -1,97 +1,329 @@
-<style>
-  .practice-schedule {
-    max-width: 1400px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    font-family: Arial, sans-serif;
-  }
+<!DOCTYPE html>
+<html lang="en">
 
-  .schedule-scroll {
-    overflow-x: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 18px rgb(0 0 0 / 10%);
-  }
+<head>
+  <meta charset="UTF-8">
 
-  #schedule-table {
-    width: 100%;
-    min-width: 900px;
-    border-collapse: collapse;
-    background: white;
-  }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  #schedule-table th,
-  #schedule-table td {
-    padding: 0.85rem;
-    /* border: 1px solid  #f2f2f2; */
-    text-align: center;
-    vertical-align: middle;
-  }
+  <title>Practice Schedule</title>
 
-  #schedule-table thead th {
-    position: sticky;
-    top: 0;
-    background: #059d55;
-    color: white;
-    font-size: 0.95rem;
-  }
+  <style>
+    :root {
+      --club-green: #059d55;
+      --page-background: #f4f6f5;
+      --table-background: #ffffff;
+      --text-color: #202624;
+      --muted-text: #68716d;
+      --group-border: #d1d8d4;
+    }
 
-  #schedule-table tbody th {
-    position: sticky;
-    left: 0;
-    min-width: 130px;
-    background: #f2f2f2;
-    text-align: left;
-    font-weight: 700;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* #schedule-table tbody tr:nth-child(even) td {
-    background: #f2f2f2;
-  } */
+    body {
+      margin: 0;
+      background: var(--page-background);
+      color: var(--text-color);
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-  .team-name {
-    display: block;
-    padding: 0.55rem 0.7rem;
-    
-    border-radius: 4px;
-    background: lightgray;
-    font-weight: 600;
-  }
+    .schedule-page {
+      width: min(1400px, calc(100% - 32px));
+      margin: 40px auto;
+    }
 
-  .team-name.u8 {
-    border-left: 4px solid yellow;
-  }
+    .schedule-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      line-height: 1.1;
+      text-align: center;
+    }
 
-  .team-name.u10 {
-    border-left: 4px solid green;
-  }
+    .schedule-description {
+      margin: 0 0 24px;
+      color: var(--muted-text);
+      text-align: center;
+    }
 
-  .team-name.u12 {
-    border-left: 4px solid #007bff;
-  }
+    #schedule-loading {
+      padding: 30px;
+      border-radius: 10px;
+      background: white;
+      text-align: center;
+      box-shadow: 0 3px 14px rgb(0 0 0 / 8%);
+    }
 
-  .team-name.u14 {
-    border-left: 4px solid #dc3545;
-  }
+    #schedule-loading.error {
+      color: #a51d23;
+      background: #fff4f4;
+    }
 
-  .empty-slot {
-    /* background: #fafafa; */
-  }
+    .schedule-scroll {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
 
-  #schedule-loading {
-    padding: 2rem;
-    text-align: center;
-  }
-</style>
-<div class="practice-schedule">
-  <div id="schedule-loading">Loading practice schedule...</div>
+    #schedule-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: transparent;
+    }
 
-  <div class="schedule-scroll">
-    <table id="schedule-table">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
+    /*
+      General cells have no grid lines.
+    */
+    #schedule-table th,
+    #schedule-table td {
+      border: 0;
+      padding: 10px;
+      text-align: center;
+      vertical-align: middle;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="schedule.js"></script>
+    /*
+      Main day headings.
+    */
+    #schedule-table thead th {
+      padding: 14px 10px;
+      background: var(--club-green);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    #schedule-table thead th:first-child {
+      border-radius: 10px 0 0 10px;
+      text-align: left;
+    }
+
+    #schedule-table thead th:last-child {
+      border-radius: 0 10px 10px 0;
+    }
+
+    /*
+      Division section heading, such as "U8 Practices".
+    */
+    .division-heading th {
+      padding: 28px 4px 10px !important;
+      background: transparent;
+      text-align: left !important;
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .division-heading-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .division-heading-label::before {
+      content: "";
+      width: 6px;
+      height: 24px;
+      border-radius: 20px;
+      background: var(--division-color);
+    }
+
+    /*
+      White background inside each bordered division group.
+    */
+    .schedule-row th,
+    .schedule-row td {
+      background: var(--table-background);
+    }
+
+    /*
+      Left and right edges of the group border.
+    */
+    .schedule-row th:first-child {
+      border-left: 2px solid var(--group-border);
+    }
+
+    .schedule-row td:last-child {
+      border-right: 2px solid var(--group-border);
+    }
+
+    /*
+      Top edge of the group border.
+    */
+    .group-first-row th,
+    .group-first-row td {
+      border-top: 2px solid var(--group-border);
+    }
+
+    /*
+      Bottom edge of the group border.
+    */
+    .group-last-row th,
+    .group-last-row td {
+      border-bottom: 2px solid var(--group-border);
+    }
+
+    /*
+      Rounded group corners.
+    */
+    .group-first-row th:first-child {
+      border-top-left-radius: 12px;
+    }
+
+    .group-first-row td:last-child {
+      border-top-right-radius: 12px;
+    }
+
+    .group-last-row th:first-child {
+      border-bottom-left-radius: 12px;
+    }
+
+    .group-last-row td:last-child {
+      border-bottom-right-radius: 12px;
+    }
+
+    /*
+      Division label on the left.
+    */
+    .division-label {
+      width: 150px;
+      min-width: 150px;
+      color: var(--text-color);
+      font-weight: 700;
+      text-align: left !important;
+      white-space: nowrap;
+    }
+
+    /*
+      Team cards.
+    */
+    .team-name {
+      display: block;
+      min-height: 44px;
+      padding: 12px 10px;
+      border-radius: 8px;
+      background: var(--division-color);
+      color: white;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.25;
+      box-shadow: 0 2px 5px rgb(0 0 0 / 12%);
+    }
+
+    .team-name:hover {
+      filter: brightness(0.95);
+    }
+
+    /*
+      Division colors.
+      Change these to any colors you prefer.
+    */
+    .division-u8 .team-name {
+      background: #FFD54F;
+      color: #000;
+    }
+
+    .division-u10 {
+      --division-color: green;
+    }
+
+    .division-u12 {
+      --division-color: #007bff;
+    }
+
+    .division-u14 {
+      --division-color: #dc3545;
+    }
+
+    /*
+      Empty practice slots.
+    */
+    .empty-slot {
+      min-width: 110px;
+    }
+
+    .empty-slot::after {
+      content: "—";
+      color: #c0c6c3;
+    }
+
+    /*
+      Mobile adjustments.
+    */
+    @media (max-width: 700px) {
+      .schedule-page {
+        width: min(100% - 20px, 1400px);
+        margin-top: 24px;
+      }
+
+      #schedule-table th,
+      #schedule-table td {
+        padding: 7px;
+      }
+
+      .team-name {
+        min-height: 40px;
+        padding: 10px 8px;
+        font-size: 0.85rem;
+      }
+    }
+
+    /*
+      Print-friendly formatting.
+    */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .schedule-page {
+        width: 100%;
+        margin: 0;
+      }
+
+      .schedule-scroll {
+        overflow: visible;
+      }
+
+      #schedule-table {
+        min-width: 0;
+      }
+
+      .team-name {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="schedule-page">
+    <h1 class="schedule-title">VSC Practice Schedule Fall 2026</h1>
+
+    <p class="schedule-description">
+      Practice assignments are organized by age division and day.
+    </p>
+
+    <div id="schedule-loading">
+      Loading practice schedule...
+    </div>
+
+    <div class="schedule-scroll">
+      <table id="schedule-table" hidden>
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- CSV parsing library -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.5.3/papaparse.min.js"></script>
+
+  <!-- Your schedule JavaScript -->
+  <script src="schedule.js"></script>
+</body>
+
+</html>
