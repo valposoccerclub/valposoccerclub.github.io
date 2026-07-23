@@ -315,24 +315,29 @@ function renderScheduleRow({
 
     const value = String(row[columnName] ?? "").trim();
 
-    if (isDivisionColumn) {
-      cell.scope = "row";
-      cell.className = "division-label";
-      cell.textContent = value || division;
-    } else if (value) {
-      const team = document.createElement("span");
+if (isDivisionColumn) {
+  cell.scope = "row";
+  cell.className = "division-label";
+  cell.textContent = value || division;
+} else if (value.toUpperCase() === "[OPEN]") {
+  const openSpot = document.createElement("span");
 
-      team.className = "team-name";
-      team.textContent = value;
+  openSpot.className = "open-practice-slot";
+  openSpot.setAttribute("aria-label", "Open practice spot");
+  openSpot.title = "Open practice spot";
 
-      cell.appendChild(team);
-    } else {
-      cell.className = "empty-slot";
-      cell.setAttribute(
-        "aria-label",
-        "No practice scheduled"
-      );
-    }
+  cell.appendChild(openSpot);
+} else if (value) {
+  const team = document.createElement("span");
+
+  team.className = "team-name";
+  team.textContent = value;
+
+  cell.appendChild(team);
+} else {
+  cell.className = "empty-slot";
+  cell.setAttribute("aria-label", "No practice scheduled");
+}
 
     tableRow.appendChild(cell);
   });
