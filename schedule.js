@@ -169,7 +169,7 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
   tableHead.replaceChildren();
   tableBody.replaceChildren();
 
-  renderTableHeader(tableHead, columnNames. divisionColumn);
+  renderTableHeader(tableHead, columnNames, divisionColumn);
 
   const groupedRows = groupRowsByDivision(
     scheduleRows,
@@ -189,18 +189,15 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
       columnNames.length-1
     );
 
-    rows.forEach((row, rowIndex) => {
-      const isFirstRow = rowIndex === 0;
-      const isLastRow = rowIndex === rows.length - 1;
-
-      renderScheduleRow({
-        tableBody,
-        row,
-        columnNames,
-        division,
-        divisionColumn,
-        isFirstRow,
-        isLastRow
+  rows.forEach((row, rowIndex) => {
+    renderScheduleRow({
+      tableBody: tableBody,
+      row: row,
+      columnNames: columnNames,
+      division: division,
+      divisionColumn: divisionColumn,
+      isFirstRow: rowIndex === 0,
+      isLastRow: rowIndex === rows.length - 1
       });
     });
   });
@@ -209,12 +206,18 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
 /*
   Builds the green table header.
 */
-function renderTableHeader(tableHead, columnNames, divisionColumn) {
+function renderTableHeader(
+  tableHead,
+  columnNames,
+  divisionColumn
+) {
   const headerRow = document.createElement("tr");
 
-  columnNames
-  .filter(columnName => columnName !== divisionColumn)
-  .forEach(columnName => {
+  const displayedColumns = columnNames.filter(
+    columnName => columnName !== divisionColumn
+  );
+
+  displayedColumns.forEach(columnName => {
     const heading = document.createElement("th");
 
     heading.scope = "col";
@@ -308,40 +311,42 @@ function renderScheduleRow({
     tableRow.classList.add("group-last-row");
   }
 
-  columnNames
-    .filter(columnName => columnName !== divisionColumn)
-    .forEach(columnName => {
-      const cell = document.createElement("td");
-      const value = String(row[columnName] ?? "").trim();
+  const displayedColumns = columnNames.filter(
+    columnName => columnName !== divisionColumn
+  );
 
-      if (value.toUpperCase() === "[OPEN]") {
-        const openSpot = document.createElement("span");
+  displayedColumns.forEach(columnName => {
+    const cell = document.createElement("td");
+    const value = String(row[columnName] ?? "").trim();
 
-        openSpot.className = "open-practice-slot";
-        openSpot.setAttribute(
-          "aria-label",
-          "Available practice spot"
-        );
-        openSpot.title = "Available practice spot";
+    if (value.toUpperCase() === "[OPEN]") {
+      const openSpot = document.createElement("span");
 
-        cell.appendChild(openSpot);
-      } else if (value) {
-        const team = document.createElement("span");
+      openSpot.className = "open-practice-slot";
+      openSpot.setAttribute(
+        "aria-label",
+        "Available practice spot"
+      );
+      openSpot.title = "Available practice spot";
 
-        team.className = "team-name";
-        team.textContent = value;
+      cell.appendChild(openSpot);
+    } else if (value) {
+      const team = document.createElement("span");
 
-        cell.appendChild(team);
-      } else {
-        cell.className = "empty-slot";
-        cell.setAttribute(
-          "aria-label",
-          "No practice scheduled"
-        );
-      }
+      team.className = "team-name";
+      team.textContent = value;
 
-      tableRow.appendChild(cell);
-    });
+      cell.appendChild(team);
+    } else {
+      cell.className = "empty-slot";
+      cell.setAttribute(
+        "aria-label",
+        "No practice scheduled"
+      );
+    }
+
+    tableRow.appendChild(cell);
+  });
 
   tableBody.appendChild(tableRow);
 }
