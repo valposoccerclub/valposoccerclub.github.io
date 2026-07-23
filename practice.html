@@ -150,6 +150,43 @@
       border-right: 2px solid var(--group-border);
     }
 
+    .open-practice-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 10px;
+  border: 2px dashed #aab5af;
+  border-radius: 8px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #f7f9f8,
+    #f7f9f8 8px,
+    #eef2f0 8px,
+    #eef2f0 16px
+  );
+}
+
+.open-practice-slot::before {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #e1e8e4;
+  color: #66716b;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+    
+.open-practice-slot::after {
+  content: "Available";
+  margin-left: 7px;
+  color: #66716b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
     /*
       Top edge of the group border.
     */
@@ -389,6 +426,17 @@
 
   .division-heading-label::before {
     height: 20px;
+  }
+
+    .open-practice-slot {
+    min-height: 42px;
+    padding: 9px 7px;
+  }
+
+  .open-practice-slot::before {
+    width: 22px;
+    height: 22px;
+    font-size: 1rem;
   }
 
   .empty-slot {
