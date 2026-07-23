@@ -212,7 +212,9 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
 function renderTableHeader(tableHead, columnNames) {
   const headerRow = document.createElement("tr");
 
-  columnNames.forEach(columnName => {
+  columnNames
+  .filter(columnName => columnName !== divisionColumn)
+  .forEach(columnName => {
     const heading = document.createElement("th");
 
     heading.scope = "col";
@@ -306,7 +308,9 @@ function renderScheduleRow({
     tableRow.classList.add("group-last-row");
   }
 
-  columnNames.forEach(columnName => {
+ columnNames
+  .filter(columnName => columnName !== divisionColumn)
+  .forEach(columnName => {
     const isDivisionColumn = columnName === divisionColumn;
 
     const cell = document.createElement(
