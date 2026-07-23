@@ -186,7 +186,7 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
     renderDivisionHeading(
       tableBody,
       division,
-      columnNames.length
+      columnNames.length-1
     );
 
     rows.forEach((row, rowIndex) => {
