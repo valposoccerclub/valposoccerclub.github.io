@@ -169,7 +169,7 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
   tableHead.replaceChildren();
   tableBody.replaceChildren();
 
-  renderTableHeader(tableHead, columnNames);
+  renderTableHeader(tableHead, columnNames. divisionColumn);
 
   const groupedRows = groupRowsByDivision(
     scheduleRows,
@@ -209,7 +209,7 @@ function renderSchedule(columnNames, scheduleRows, divisionColumn) {
 /*
   Builds the green table header.
 */
-function renderTableHeader(tableHead, columnNames) {
+function renderTableHeader(tableHead, columnNames, divisionColumn) {
   const headerRow = document.createElement("tr");
 
   columnNames
@@ -308,43 +308,40 @@ function renderScheduleRow({
     tableRow.classList.add("group-last-row");
   }
 
- columnNames
-  .filter(columnName => columnName !== divisionColumn)
-  .forEach(columnName => {
-    const isDivisionColumn = columnName === divisionColumn;
+  columnNames
+    .filter(columnName => columnName !== divisionColumn)
+    .forEach(columnName => {
+      const cell = document.createElement("td");
+      const value = String(row[columnName] ?? "").trim();
 
-    const cell = document.createElement(
-      isDivisionColumn ? "th" : "td"
-    );
+      if (value.toUpperCase() === "[OPEN]") {
+        const openSpot = document.createElement("span");
 
-    const value = String(row[columnName] ?? "").trim();
+        openSpot.className = "open-practice-slot";
+        openSpot.setAttribute(
+          "aria-label",
+          "Available practice spot"
+        );
+        openSpot.title = "Available practice spot";
 
-if (isDivisionColumn) {
-  cell.scope = "row";
-  cell.className = "division-label";
-  cell.textContent = value || division;
-} else if (value.toUpperCase() === "[OPEN]") {
-  const openSpot = document.createElement("span");
+        cell.appendChild(openSpot);
+      } else if (value) {
+        const team = document.createElement("span");
 
-  openSpot.className = "open-practice-slot";
-  openSpot.setAttribute("aria-label", "Open practice spot");
-  openSpot.title = "Open practice spot";
+        team.className = "team-name";
+        team.textContent = value;
 
-  cell.appendChild(openSpot);
-} else if (value) {
-  const team = document.createElement("span");
+        cell.appendChild(team);
+      } else {
+        cell.className = "empty-slot";
+        cell.setAttribute(
+          "aria-label",
+          "No practice scheduled"
+        );
+      }
 
-  team.className = "team-name";
-  team.textContent = value;
-
-  cell.appendChild(team);
-} else {
-  cell.className = "empty-slot";
-  cell.setAttribute("aria-label", "No practice scheduled");
-}
-
-    tableRow.appendChild(cell);
-  });
+      tableRow.appendChild(cell);
+    });
 
   tableBody.appendChild(tableRow);
 }
